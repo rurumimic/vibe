@@ -1,6 +1,6 @@
 # Ring Buffer
 
-## Run a example
+## Run an example
 
 ```bash
 cargo run --example queue

@@ -1,5 +1,7 @@
 # Vibe
 
+How to vibe with AI
+
 ## For Humans
 
 **"AI writes the draft. We define the value."**

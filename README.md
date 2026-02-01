@@ -70,3 +70,9 @@ We take responsibility for the work until it ships.
    We always ask: is this actually correct?
 3. **Declare constraints upfront**  
    Performance, cost, security, and operability are not "later." They are decisions we make now.
+
+---
+
+See also:
+
+- [Human Guardrails for Vibe](docs/human_guardrails.md) - What not to delegate to AI

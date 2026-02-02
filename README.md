@@ -76,3 +76,9 @@ We take responsibility for the work until it ships.
 See also:
 
 - [Human Guardrails for Vibe](docs/human_guardrails.md) - What not to delegate to AI
+
+---
+
+## Docs
+
+- [Code Style Guides](docs/styles/)

@@ -107,7 +107,7 @@ def retry(max_attempts: int = 3):
             for attempt in range(max_attempts):
                 try:
                     return func(*args, **kwargs)
-                except Exception as e:
+                except Exception:
                     if attempt == max_attempts - 1:
                         raise
         return wrapper
@@ -125,7 +125,9 @@ def retry(max_attempts: int = 3):
 ### 4. 동시성
 
 - I/O 바운드: `async`/`await`
-- CPU 바운드: `ThreadPoolExecutor` 또는 `multiprocessing`
+- CPU 바운드:
+  - pure Python 연산: `ProcessPoolExecutor` 또는 `multiprocessing` (CPython GIL로 인해 스레드 병렬화 불가)
+  - GIL을 해제하는 C 확장 연산: `ThreadPoolExecutor`도 가능
 - 동시성 아키텍처를 개발할 때 AI도 믿지 마라. 경험 많은 팀원을 리뷰어로 추가하라.
 
 ---
@@ -143,25 +145,33 @@ def retry(max_attempts: int = 3):
 - 빌트인 제네릭을 사용한다: `list[str]`, `dict[str, Any]`, `tuple[int, ...]`
 - nullable 값에는 `X | None`을 사용한다 (`Optional[X]` 대신)
 - 유니온 타입에는 `X | Y`를 사용한다 (`Union[X, Y]` 대신)
-- 타입 별칭에는 `type` 문 (Python 3.12+)을 사용한다
 - 모든 함수의 매개변수와 반환값에 타입 힌트를 추가한다
 - `Any`는 정말 필요한 경우에만 최소한으로 사용한다
 
-#### 타입 힌트 문법 (Python 3.10+)
-| 상황 | 최신 문법 | 레거시 문법 |
+#### 타입 힌트 문법
+| 상황 | 권장 문법 | 레거시 |
 |------|-----------|-------------|
 | nullable 값 | `str \| None` | `Optional[str]` |
 | 유니온 타입 | `str \| int` | `Union[str, int]` |
 | 딕셔너리 | `dict[str, Any]` | `Dict[str, Any]` |
 | 리스트 | `list[int]` | `List[int]` |
-| 타입 별칭 | `type Vector = list[float]` | `Vector: TypeAlias = List[float]` |
+
+#### 타입 별칭
+| 버전 | 문법 |
+|----------------|--------|
+| 3.12+ | `type Vector = list[float]` |
+| 3.10-3.11 | `Vector: TypeAlias = list[float]` |
 
 #### 좋은 예시
 ```python
 from collections.abc import Callable, Iterator
+from typing import TypeAlias
 
 def find_files(root: str, pattern: str) -> Iterator[str]:
     ...
+
+# 타입 별칭 (Python 3.10-3.11)
+Vector: TypeAlias = list[float]
 
 # 타입 별칭 (Python 3.12+)
 type Handler = Callable[[str], bool]

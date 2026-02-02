@@ -107,7 +107,7 @@ def retry(max_attempts: int = 3):
             for attempt in range(max_attempts):
                 try:
                     return func(*args, **kwargs)
-                except Exception as e:
+                except Exception:
                     if attempt == max_attempts - 1:
                         raise
         return wrapper
@@ -125,7 +125,9 @@ def retry(max_attempts: int = 3):
 ### 4. Concurrency
 
 - I/O-bound: `async`/`await`
-- CPU-bound: `ThreadPoolExecutor` or `multiprocessing`
+- CPU-bound:
+  - Pure Python workloads: `ProcessPoolExecutor` or `multiprocessing` (CPython GIL prevents true CPU parallelism with threads)
+  - Workloads using C extensions that release the GIL: `ThreadPoolExecutor` can be effective
 - Don't trust AI when developing concurrent architectures. Add experienced team members as reviewers.
 
 ---
@@ -143,25 +145,33 @@ def retry(max_attempts: int = 3):
 - Use built-in generics: `list[str]`, `dict[str, Any]`, `tuple[int, ...]`
 - Use `X | None` for nullable values (not `Optional[X]`)
 - Use `X | Y` for union types (not `Union[X, Y]`)
-- Use `type` statement for type aliases (Python 3.12+)
 - Add type hints to all function parameters and return values
 - Use `Any` sparingly and only when truly necessary
 
-#### Type Hint Syntax (Python 3.10+)
-| Situation | Modern Syntax | Legacy Syntax |
+#### Type Hint Syntax
+| Case | Recommended Syntax | Legacy |
 |-----------|---------------|---------------|
 | Nullable value | `str \| None` | `Optional[str]` |
 | Union types | `str \| int` | `Union[str, int]` |
 | Dictionary | `dict[str, Any]` | `Dict[str, Any]` |
 | List | `list[int]` | `List[int]` |
-| Type alias | `type Vector = list[float]` | `Vector: TypeAlias = List[float]` |
+
+#### Type Aliases
+| Python Version | Syntax |
+|----------------|--------|
+| 3.12+ | `type Vector = list[float]` |
+| 3.10-3.11 | `Vector: TypeAlias = list[float]` |
 
 #### Good Example
 ```python
 from collections.abc import Callable, Iterator
+from typing import TypeAlias
 
 def find_files(root: str, pattern: str) -> Iterator[str]:
     ...
+
+# Type alias (Python 3.10-3.11)
+Vector: TypeAlias = list[float]
 
 # Type alias (Python 3.12+)
 type Handler = Callable[[str], bool]

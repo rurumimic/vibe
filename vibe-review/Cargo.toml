@@ -1,0 +1,4 @@
+[workspace]
+members = ["vibe-review"]
+resolver = "3"
+

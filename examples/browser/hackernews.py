@@ -59,7 +59,7 @@ async def main():
 
     finally:
         # 정말 닫고 싶을 때만 호출
-        await browser.close()
+        await browser.stop()
 
 
 if __name__ == "__main__":
